@@ -4,8 +4,10 @@ services:
   fe-gtt:
     image: giorgiodaniele/fe-gtt:1.1
     container_name: fe-gtt
-    expose:
+    ports:               # qui ports, non expose
       - "80:80"
+    expose:
+      - 80
     depends_on:
       - be-gtt
     networks:
@@ -15,7 +17,7 @@ services:
     image: giorgiodaniele/be-gtt:1.1
     container_name: be-gtt
     expose:
-      - "8080"
+      - 8080
     networks:
       - gtt-net
 
