@@ -4,10 +4,8 @@ services:
   fe-gtt:
     image: giorgiodaniele/fe-gtt:1.1
     container_name: fe-gtt
-    ports:               # qui ports, non expose
-      - "80:80"
-    expose:
-      - 80
+    ports:
+      - "80:80"         # nginx accessibile da fuori
     depends_on:
       - be-gtt
     networks:
@@ -17,7 +15,7 @@ services:
     image: giorgiodaniele/be-gtt:1.1
     container_name: be-gtt
     expose:
-      - 8080
+      - 8080            # visibile solo in gtt-net
     networks:
       - gtt-net
 
