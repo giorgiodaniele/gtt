@@ -1,0 +1,24 @@
+version: "3.9"
+
+services:
+  fe-gtt:
+    image: giorgiodaniele/fe-gtt:1.0
+    container_name: fe-gtt
+    ports:
+      - "80:80"
+    depends_on:
+      - be-gtt
+    networks:
+      - gtt-net
+
+  be-gtt:
+    image: giorgiodaniele/be-gtt:1.0
+    container_name: be-gtt
+    expose:
+      - "8080"
+    networks:
+      - gtt-net
+
+networks:
+  gtt-net:
+    driver: bridge

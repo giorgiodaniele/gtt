@@ -1,0 +1,74 @@
+# === React / Node.js ===
+
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+yarn.lock
+.pnpm-debug.log
+
+# Build
+dist/
+build/
+.cache/
+.next/
+out/
+coverage/
+
+.vscode/
+.idea/
+*.swp
+
+.DS_Store
+Thumbs.db
+
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs
+*.log
+*.log.*
+lerna-debug.log*
+
+# Misc
+*.tsbuildinfo
+
+---
+
+# === Go ===
+
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+bin/
+build/
+dist/
+
+# Mod cache
+vendor/
+
+# Files di coverage
+*.cover
+*.coverprofile
+*.cov
+coverage.txt
+
+go.sum
+
+
+
+# Backup / temp
+*.tmp
+*.bak
+*.swp
+*.swo
+*~
