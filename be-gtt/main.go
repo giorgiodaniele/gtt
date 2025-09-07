@@ -12,61 +12,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-//
-// --- MODELS ---
-//
-
-// type Vehicle struct {
-// 	Id       int     `json:"id"`
-// 	Tipo     string  `json:"tipo"`
-// 	Disabili bool    `json:"disabili"`
-// 	Lat      float64 `json:"lat"`
-// 	Long     float64 `json:"lon"`
-// 	Update   string  `json:"aggiornamento"`
-// }
-
-// type Stop struct {
-// 	Code     string  `json:"codice"`
-// 	Name     string  `json:"nome"`
-// 	Lat      float64 `json:"lat"`
-// 	Long     float64 `json:"lon"`
-// 	Disabili bool    `json:"disabili"`
-// }
-
-// type FeatureCollection struct {
-// 	Type     string    `json:"type"`
-// 	Features []Feature `json:"features"`
-// }
-
-// type Feature struct {
-// 	Type       string     `json:"type"`
-// 	Geometry   Geometry   `json:"geometry"`
-// 	Properties Properties `json:"properties"`
-// }
-
-// type Geometry struct {
-// 	Type        string      `json:"type"`
-// 	Coordinates interface{} `json:"coordinates"`
-// }
-
-// type Properties struct {
-// 	Name      string `json:"name"`
-// 	Popup     string `json:"popupContent"`
-// 	Direction string `json:"direction"`
-// }
-
-// type PathStop struct {
-// 	Code      string  `json:"code"`
-// 	Name      string  `json:"name"`
-// 	Lat       float64 `json:"lat"`
-// 	Long      float64 `json:"lon"`
-// 	Direction string  `json:"direction"`
-// }
-
-//
-// --- MAIN ---
-//
-
+// MODELS
 type Line struct {
 	Linea       string  `json:"linea"`
 	NomeSteso   string  `json:"nomesteso"`
@@ -129,6 +75,18 @@ func main() {
 	// Create a new Gin router
 	r := gin.Default()
 
+	// CORS middleware
+	r.Use(func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type, Accept")
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+		c.Next()
+	})
+
 	// Get the lines
 	r.GET("/api/lines", func(c *gin.Context) {
 		data, err := os.ReadFile("lines.data")
@@ -141,7 +99,24 @@ func main() {
 
 		rawLines := strings.Split(strings.TrimSpace(string(data)), "\n")
 
-		c.JSON(200, rawLines)
+		type LineItem struct {
+			ID   string `json:"id"`
+			Name string `json:"name"`
+		}
+
+		var result []LineItem
+		for _, l := range rawLines {
+			parts := strings.SplitN(l, ";", 2) // support "id;name"
+			item := LineItem{ID: strings.TrimSpace(parts[0])}
+			if len(parts) > 1 {
+				item.Name = strings.TrimSpace(parts[1])
+			} else {
+				item.Name = item.ID // fallback
+			}
+			result = append(result, item)
+		}
+
+		c.JSON(200, result)
 	})
 
 	// Vehicles for a line
@@ -159,6 +134,10 @@ func main() {
 		if err := json.NewDecoder(res.Body).Decode(&vehicles); err != nil {
 			c.String(500, "Error parsing JSON: %s", err)
 			return
+		}
+
+		if vehicles == nil { // make sure it's not null
+			vehicles = []Vehicle{}
 		}
 
 		c.JSON(200, vehicles)
